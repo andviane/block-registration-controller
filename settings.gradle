@@ -1,0 +1,5 @@
+// bDB - database entities, Hibernate mappings.
+// bAPI - JSON API
+// bMVC - Spring controllers and the main app.
+include 'bDB','bAPI','bMVC'
+

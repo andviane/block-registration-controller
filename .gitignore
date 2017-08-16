@@ -1,0 +1,10 @@
+.gradle
+.metadata
+.recommenders
+.classpath
+.project
+bin
+build
+.springBeans
+.settings
+

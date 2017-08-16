@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<style>
+.rightLine {
+	border-right: 1px solid black
+}
+
+.margins {
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+.number {
+	text-align: center;
+}
+
+.tables {
+	border-collapse: collapse;
+}
+
+td {
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+th {
+	background-color: #A7C942;
+	color: #ffffff;
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+.tables tr.odd td {
+	color: #000000;
+	background-color: #f7ffde;
+}
+
+pre {
+    font-family: "Times New Roman", Times, serif;
+    color: #0000A0;
+    background-color: #f7ffde;
+}
+
+</style>
+<title th:text="${contract.contract.no}">Contract overview</title>
+</head>
+<body>
+	<h1>Contract <span th:text="${contract.contract.no}"/></h1>
+	<p>
+	  <em th:text="${contract.contract.title}"/>. 
+	</p>
+	<p>
+	  Created <em th:text="${contract.created}"/>, last activity <em th:text="${contract.lastActivity}"/>
+	</p>
+	<p>
+	  Address <em th:text="${contract.contract.address}"/>, phone <em th:text="${contract.contract.phone}"/>, 
+	  e-mail <em th:text="${contract.contract.eMail}"/>, IP <em th:text="${contract.contract.ipAddress}"/>,
+	  accounts: <em th:text="${contract.totalAccounts}"/>  
+	</p>	
+	 <p>    
+	  <span th:text="${contract.contract.description}"/>
+	</p>
+		
+	<p><a href="..">Back to list</a></p>
+
+	<table class='tables'>
+		<tr>
+			<th>Account</th>
+			<th colspan='2'>Date</th>
+			<th>Amount</th>			
+			<th>Currency</th>
+			<th>Status</th>
+		</tr>
+		<tr>
+			<th/>	
+			<th>Created</th>
+			<th>Processed</th>
+			<th/>
+			<th/>
+			<th/>			
+		</tr>
+
+		<tr th:each="e,iterStat : ${accounts}" th:class="${iterStat.odd}? 'odd'">
+			<td th:text="${e.account.no}" />
+			<td th:text="${e.created}" class='rightLine' />
+			<td th:text="${e.lastProcessed}" class='rightLine' />
+			<td th:text="${e.amount}" class='number' />
+			<td th:text="${e.account.currency}" class='number margins rightLine'/>					
+            <td th:text="${e.status}" class='number margins rightLine'/>			
+		</tr>
+	</table>
+</body>
+</html>

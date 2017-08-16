@@ -1,0 +1,9 @@
+// Constants used in all projects. Especially version numbers please put here as must be in sync.
+ext {
+  springBootVersion = "1.5.6.RELEASE"
+  jacksonVersion="2.9.0"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}

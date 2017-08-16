@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+<style>
+.rightLine {
+	border-right: 1px solid black
+}
+
+td {
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+.number {
+	text-align: center;
+}
+
+.tables {
+	border-collapse: collapse;
+}
+
+th {
+	background-color: #A7C942;
+	color: #ffffff;
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+tr.odd td {
+	color: #000000;
+	background-color: #f7ffde;
+}
+</style>
+<title>Contract overview</title>
+</head>
+<body>
+	<h1>Contracts</h1>
+	<p>Total contracts: <span th:text="${total_contracts}"/>
+      <span th:if="${showOld}">
+         (showing all). <a href="?showOld=false">Show unreviewed only.</a>       
+      </span>   	
+      <span th:unless="${showOld}">
+         (showing unreviewed only). <a href="?showOld=true">Show all.</a>       
+      </span>
+	</p>
+
+    <form method="post">   
+	<table class='tables'>
+		<tr>
+			<th>Contract</th>
+			<th>Title</th>			
+			<th colspan='2'>Date when</th>
+			<th colspan='2'>Accounts</th>
+			<th>Reviewed</th>			
+			<th></th>
+			<th>Details</th>
+		</tr>
+		<tr>
+			<th/>
+			<th/>			
+			<th>Created</th>
+            <th>Modified</th>			
+			<th>New</th>
+			<th>Approved</th>
+			<th/>
+			<th/>
+			<th/>
+		</tr>
+
+		<tr th:each="e,iterStat : ${contracts}" th:class="${iterStat.odd}? 'odd'">
+		    <td th:text="${e.name}"/>
+		    <td th:text="${e.title}"/>
+		    <td th:text="${e.created}"  />
+			<td th:text="${e.lastActivity}" class='rightLine' />
+			<td th:text="${e.approvedAccounts}" class='number' />
+			<td th:text="${e.newAccounts}" class='number' />
+			<td>
+			<input type="checkbox" 
+                name="old" th:value="${e.contract.id}" th:checked="${e.finalized}" />
+			<input type="hidden" 
+                name="all" th:value="${e.contract.id}" />
+            </td>                            
+			<td> <a th:text="Details" th:href="@{'details/' + ${e.contract.id}}"/> </td>
+			<td th:text="${e.title}" />
+		</tr>
+	</table>
+	<p>
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>    	
+	  <input type="submit" value="Update"/>
+	</p>
+	</form>
+	
+    <form th:action="@{/logout}" method="post">  
+       <p>
+         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>       
+         <input type="submit" value="Sign Out"/>
+       </p>
+    </form>	
+</body>
+</html>

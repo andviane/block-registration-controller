@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<style>
+.rightLine {
+	border-right: 1px solid black
+}
+
+.margins {
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+.number {
+	text-align: center;
+}
+
+.tables {
+	border-collapse: collapse;
+}
+
+th {
+	background-color: #A7C942;
+	color: #ffffff;
+	padding-right: 5px;
+	padding-left: 5px
+}
+
+.hlogin {
+	margin-top: 10px;
+	width: 400px;
+}
+
+.hloginbutton {
+	margin-top: 10px;
+	padding: 10px;
+}
+
+.tables tr.odd td {
+	color: #000000;
+	background-color: f7ffde;
+}
+</style>
+<title>Login required</title>
+</head>
+
+<body>
+	<div th:if="${param.logout}">You have been logged out.</div>
+	<h1>Please login</h1>
+	<form action="j_spring_security_check" method="post">
+		<div class='hlogin'>User Name :</div>
+		<div>
+			<input type="text" name="j_username" />
+		</div>
+		<div class='hlogin'>Password:</div>
+		<div>
+			<input type="password" name="j_password" />
+		</div>
+		<div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>		
+			<input class='hloginbutton' type="submit" value="Sign In" />
+		</div>
+	</form>
+</body>
+</html>
