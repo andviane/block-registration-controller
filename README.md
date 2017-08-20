@@ -2,17 +2,29 @@ This code is the conceptual user registration module, intended to be used with u
 
 The Hibernate-driven database currently supports two tables, contracts and accounts (can be multiple accounts per contract). I also added some fields how came to my mind, but all this is temporary and will be replaced by the real database schema, or (if we cannot get in one jump) will eventually converge into the final database schema over few development iterations.
 
-The system only has administrative interface and it does not have the end user web GUI. It accepts JSON calls instead. The current registration message message it accepts looks like:
+The system only has administrative interface and it does not have the end user web GUI. It accepts JSON calls instead. The current registration message message it accepts on the endpoint /api/registerPerson looks like:
 
+```json
 {
-  "token" : "16BQD541.1IWLQ5KK",
-  "title" : "Dr John Doe",
-  "description" : "My first registration",
-  "address" : "CH-8117, Unterdorfwaeg 11, Fallanden, Switzerland",
-  "phone" : "+41762614348",
-  "eMail" : "me@myserver.com",
-  "ipAddress" : "100.200.300.400"
+  "token" : "16BQD5B91.1IW5KK",
+  "country": "Lithuania",
+  "fullName" : "John Doe",
+  "birthDate" : "04.10.1968",
+  "nationality" : "Swiss",
+  "placeOfBirth" : "Zurich",
+  "idType" : "passport",
+  "idNumber" : "L1234567896",
+  "address" : {
+    "streetName" : "Unterdorfwaeg",
+    "houseNumber" : "24A",
+    "zipCode" : "CH-8117",
+    "city" : "Faellanden",
+    "phone" : "+4123456789",
+    "email" : "me@myServer"
+  }
 }
+```
+
 
 The HTTP method must be PUT. I have used the Yet Another Rest Client (YARC) to send the requests and register few accounts. Almost any development platform should be able to send such request rather easily.
 

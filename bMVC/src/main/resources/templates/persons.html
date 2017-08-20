@@ -32,11 +32,11 @@ tr.odd td {
 	background-color: #f7ffde;
 }
 </style>
-<title>Contract overview</title>
+<title>Person overview</title>
 </head>
 <body>
-	<h1>Contracts</h1>
-	<p>Total contracts: <span th:text="${total_contracts}"/>
+	<h1>Persons</h1>
+	<p>Total persons: <span th:text="${persons.size()}"/>
       <span th:if="${showOld}">
          (showing all). <a href="?showOld=false">Show unreviewed only.</a>       
       </span>   	
@@ -48,41 +48,44 @@ tr.odd td {
     <form method="post">   
 	<table class='tables'>
 		<tr>
-			<th>Contract</th>
-			<th>Title</th>			
+			<th>Name</th>
+			<th>No</th>			
+			<th>Nationality</th>
+			<th>Place of birth</th>
+			<th>Birthday</th>
 			<th colspan='2'>Date when</th>
-			<th colspan='2'>Accounts</th>
 			<th>Reviewed</th>			
-			<th></th>
 			<th>Details</th>
 		</tr>
 		<tr>
 			<th/>
+			<th/>
+			<th/>
+			<th/>	
 			<th/>			
 			<th>Created</th>
             <th>Modified</th>			
-			<th>New</th>
-			<th>Approved</th>
-			<th/>
 			<th/>
 			<th/>
 		</tr>
 
-		<tr th:each="e,iterStat : ${contracts}" th:class="${iterStat.odd}? 'odd'">
-		    <td th:text="${e.name}"/>
-		    <td th:text="${e.title}"/>
-		    <td th:text="${e.created}"  />
-			<td th:text="${e.lastActivity}" class='rightLine' />
-			<td th:text="${e.approvedAccounts}" class='number' />
-			<td th:text="${e.newAccounts}" class='number' />
+		<tr th:each="e,iterStat : ${persons}" th:class="${iterStat.odd}? 'odd'">
+		    <td th:text="${e.fullName}"/>
+		    <td th:text="${e.no}"/>
+		    <td th:text="${e.nationality}"/>
+		    <td th:text="${e.placeOfBirth}"/>
+		    <td th:text="${#dates.format(e.birthDate, 'dd-MMM-yyyy')}"  />		    
+		    
+		    <td th:text="${#dates.format(e.created, 'dd-MMM-yyyy HH:mm')}"  />
+		    <td th:text="${#dates.format(e.updated, 'dd-MMM-yyyy HH:mm')}"  />		    
+
 			<td>
 			<input type="checkbox" 
-                name="old" th:value="${e.contract.id}" th:checked="${e.finalized}" />
+                name="old" th:value="${e.id}" th:checked="${e.reviewed}" />
 			<input type="hidden" 
-                name="all" th:value="${e.contract.id}" />
+                name="all" th:value="${e.id}" />
             </td>                            
-			<td> <a th:text="Details" th:href="@{'details/' + ${e.contract.id}}"/> </td>
-			<td th:text="${e.title}" />
+			<td> <a th:text="Details" th:href="@{'details/' + ${e.id}}"/> </td>
 		</tr>
 	</table>
 	<p>

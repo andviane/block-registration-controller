@@ -1,9 +1,18 @@
 {
-  "token" : "16BQDHVR41.1IWW2LQ5KK",
-  "title" : "Dr John Doe",
-  "description" : "My first registration",
-  "address" : "CH-8117, Unterdorfwaeg 11, Fallanden, Switzerland",
-  "phone" : "+41762614348",
-  "eMail" : "me@myserver.com",
-  "ipAddress" : "100.200.300.400"
+  "token" : "16BQD5B91.1IW5KK",
+  "country": "Lithuania",
+  "fullName" : "John Doe",
+  "birthDate" : "04.10.1968",
+  "nationality" : "Swiss",
+  "placeOfBirth" : "Zurich",
+  "idType" : "passport",
+  "idNumber" : "L1234567896",
+  "address" : {
+    "streetName" : "Unterdorfwaeg",
+    "houseNumber" : "24A",
+    "zipCode" : "CH-8117",
+    "city" : "Faellanden",
+    "phone" : "+4123456789",
+    "email" : "me@myServer"
+  }
 }

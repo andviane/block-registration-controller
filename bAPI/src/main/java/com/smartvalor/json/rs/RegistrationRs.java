@@ -19,7 +19,7 @@ public class RegistrationRs {
 		return contractNo;
 	}
 
-	public void setContractNo(String contractNo) {
+	public void setRegisteredEntityNo(String contractNo) {
 		this.contractNo = contractNo;
 	}
 

@@ -5,12 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
-import com.smartvalor.hl.controllers.ContractController;
+import com.smartvalor.hl.controllers.LoginController;
 import com.smartvalor.hl.controllers.WebSecurityConfig;
 import com.smartvalor.hl.logic.UniqueUUIDGenerator;
 
 @SpringBootApplication
-@ComponentScan(basePackageClasses={ContractController.class, UniqueUUIDGenerator.class})
+@ComponentScan(basePackageClasses={LoginController.class, UniqueUUIDGenerator.class})
 @Import(WebSecurityConfig.class)
 public class Application {
 

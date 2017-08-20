@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<title th:text="${person.fullName}"/>
+</head>
+<body>
+	<p><a href="..">Back to list</a></p>
+	<h1 th:text="${person.fullName}"/>
+	<p>
+	  <em th:text="${person.no}"/>. 
+	</p>	
+	<h3>Origin</h3>
+	<p>
+      <em th:text="${person.nationality}"/> nationality, 	
+	  born <em th:text="${person.birthDate}"/>, <em th:text="${person.placeOfBirth}"/> 
+	</p>	
+
+    <h3>Contact information</h3>
+
+	<div th:each="e,iterStat : ${person.address}">	
+	  <span th:text="${e.country}"/>,
+	  <span th:text="${e.city}"/>,
+	  <span th:text="${e.streetName}"/>
+	  <span th:text="${e.houseNumber}"/>,
+	  <span th:text="${e.zipCode}"/>,
+	  phone <span th:text="${e.phone}"/>,
+	  email <span th:text="${e.email}"/>
+	  (added <span th:text="${e.updated}"/>)
+	</div>
+	
+	<h3>Book keeping</h3>
+	<div>
+	  Created <em th:text="${person.created}"/>, updated <em th:text="${person.updated}"/>
+    </div>	  
+	
+</body>
+</html>

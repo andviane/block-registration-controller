@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * The persistence configuration for relational database.
  */
 @EnableAutoConfiguration
-@EnableJpaRepositories(basePackageClasses = { Contract.class })
+@EnableJpaRepositories(basePackageClasses = { Person.class })
 @EnableTransactionManagement
 @Configuration
 @PropertySource("classpath:biocap.properties")

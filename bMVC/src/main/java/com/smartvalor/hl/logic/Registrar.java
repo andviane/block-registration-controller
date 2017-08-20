@@ -1,103 +1,103 @@
 package com.smartvalor.hl.logic;
 
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.smartvalor.db.Account;
-import com.smartvalor.db.AccountRepository;
-import com.smartvalor.db.Contract;
-import com.smartvalor.db.ContractRepository;
+import com.smartvalor.db.Address;
+import com.smartvalor.db.AddressRepository;
+import com.smartvalor.db.Person;
+import com.smartvalor.db.PersonRepository;
 
 @Service
 @Transactional
 @PropertySource("classpath:/smartValor.properties") // can also be file
 public class Registrar {
-	private static final Logger LOG = Logger.getLogger(Registrar.class);
-
+	private static final Logger logger = Logger.getLogger(Registrar.class);
+	
 	@Autowired
-	protected ContractRepository contracts;
-
+	PersonRepository persons;
+	
 	@Autowired
-	protected AccountRepository accounts;
+	AddressRepository addresses;
 	
 	@Autowired
 	UniqueUUIDGenerator uuids;
 	
-	// Conceptual - pick value from configuration
-	@Value("${contract.default.type}")
-	protected String defaultContractType;
-
-	public void storeContract(Contract e) {
-		LOG.debug("Saving " + e);
-
-		mergeAndSave(e);
+	@Autowired
+	EntityManager entityManager;
+	
+	/**
+	 * Store person. 
+	 * 
+	 * @param person
+	 */
+	public void storePerson(Person person) {
+		Person existing = person.getId() == null ? null: persons.findOne(person.getId());
 		
-		accounts.flush();
-		contracts.flush();
-	}
-
-	// Some fields may be immutable, others may require logic to merge.
-	private void mergeAndSave(Contract ew) {
-		Contract existing = ew.getId() == null ? null: contracts.findOne(ew.getId());
 		if (existing != null) {
-			existing.setDeleted(ew.isDeleted());
-			existing.setReviewed(ew.isReviewed());
-			existing.setPhone(ew.getPhone());
-			existing.setDescription(ew.getDescription());
-			existing.seteMail(ew.geteMail());
-			existing.setAddress(ew.getAddress());
-			existing.setNo(ew.getNo());
-			existing.setTitle(ew.getTitle());
-			existing.setType(defaultContractType);
 
-			if (ew.getAccounts() != null) {
-				for (Account a : ew.getAccounts()) {
+			if (person.getAddress() != null) {
+				// Delete addresses that are no longer in the person's list.
+				Set<Address> newAddresses = new LinkedHashSet<>(person.getAddress());
+				for (Address a : existing.getAddress()) {
+					if (!newAddresses.contains(a)) {
+						addresses.delete(a);
+					}
+				}
+				
+				// Save or save overwriting existing addresses.
+				for (Address a: person.getAddress()) {
+					a.setPerson(person);
 					mergeAndSave(a);
 				}
-
-				existing.getAccounts().addAll(ew.getAccounts());
+				existing.setAddress(newAddresses);
 			}
 		} else {
 			// new
-			ew.setCreated(now());
-			ew.setLastUpdated(ew.getCreated());
+			person.setNo(toString(uuids.nextUUID()));
 			
 			UUID uuid = uuids.nextUUID();
-			ew.setId(uuid);
-			ew.setNo(toString(uuid));
+			person.setId(uuid);
 			
-			contracts.save(ew);
-			
-			if (ew.getAccounts() != null) {
-				for (Account a : ew.getAccounts()) {
-					mergeAndSave(a);
-				}
+			persons.save(person);
+			for (Address a : person.getAddress()) {
+				a.setId(uuids.nextUUID());
+				a.setPerson(person);
+				addresses.save(a);
 			}
 		}
-	}
+	}	
 
-	// Some fields may be immutable, others may require logic to merge.
-	private void mergeAndSave(Account f) {
-		Account existing = f.getId() == null ? null: accounts.findOne(f.getId());
+	private void mergeAndSave(Address f) {
+		Address existing = f.getId() == null ? null: addresses.findOne(f.getId());
 
 		if (existing != null) {
-			existing.setLastProcessed(now());
+			existing.setUpdated(now());
+			
+			existing.setStreetName(f.getStreetName());
+			existing.setHouseNumber(f.getHouseNumber());			
+			existing.setCity(f.getCity());
+			existing.setCountry(f.getCountry());
+			existing.setEmail(f.getEmail());
+			existing.setPhone(f.getPhone());
 		} else {
 			f.setCreated(now());
-			f.setLastProcessed(f.getCreated());
+			f.setUpdated(f.getCreated());
 			
 			UUID uuid = uuids.nextUUID();
 			f.setId(uuid);
-			f.setNo(toString(uuid));
-			accounts.save(f);
 		}
+		addresses.save(f);		
 	}
 
 	private String toString(UUID uuid) {

@@ -7,4 +7,6 @@ bin
 build
 .springBeans
 .settings
+application.properties
+smartValor.properties
 

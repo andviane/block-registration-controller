@@ -1,8 +1,8 @@
 package com.smartvalor.hl.controllers;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.transaction.Transactional;
 
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartvalor.db.Account;
-import com.smartvalor.db.Contract;
-import com.smartvalor.db.ContractRepository;
 import com.smartvalor.db.Persistence;
+import com.smartvalor.db.Person;
+import com.smartvalor.db.PersonRepository;
 import com.smartvalor.hl.logic.Registrar;
 import com.smartvalor.hl.logic.UniqueUUIDGenerator;
-import com.smartvalor.json.rq.RegistrationRq;
+import com.smartvalor.json.Address;
+import com.smartvalor.json.rq.PersonRegistrationRq;
 import com.smartvalor.json.rs.RegistrationRs;
 
 @Controller
@@ -35,7 +35,7 @@ import com.smartvalor.json.rs.RegistrationRs;
 		@PropertySource("classpath:application.properties"),
 		@PropertySource("classpath:/smartValor.properties")})
 @RequestMapping(value = "/api", produces = "application/json")
-@ComponentScan(basePackageClasses = { Persistence.class, ContractRepository.class, Registrar.class })
+@ComponentScan(basePackageClasses = { Persistence.class, PersonRepository.class, Registrar.class })
 @Transactional
 public class JsonController {
 	private static final Logger logger = Logger.getLogger(JsonController.class);
@@ -51,10 +51,10 @@ public class JsonController {
 
 	// Convert to JSON for logging all requests.
 	private final ObjectMapper json = new ObjectMapper();
-
-	@RequestMapping(value = "/register", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	
+	@RequestMapping(value = "/registerPerson", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
-	public ResponseEntity<?> addContract(@RequestBody RegistrationRq registration) {
+	public ResponseEntity<?> registerPerson(@RequestBody PersonRegistrationRq registration) {
 		RegistrationRs response = new RegistrationRs();
 		if (!token.equals(registration.getToken())) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -62,54 +62,47 @@ public class JsonController {
 		
 		try {
 			logger.info("Registration: " + json.writeValueAsString(registration));
-			// TODO No field validator so far
-
-			Contract contract = new Contract();
-
-			contract.setTitle(registration.getTitle());
-			contract.setAddress(registration.getAddress());
-			contract.seteMail(registration.geteMail());
-			contract.setIpAddress(registration.getIpAddress());
-			contract.setPhone(registration.getPhone());
-			contract.setDescription(registration.getDescription());
-
-			contract.setLastUpdated(contract.getCreated());
-			contract.setCreated(now());
-
-			// It is probably not time to create the account now, we create two
-			// anyway in this prototype to test.
-			Set<Account> accounts = new HashSet<>();
-
-			Account chfAccount = new Account();
-			chfAccount.setContract(contract);
-
-			chfAccount.setAmount(0);
-			chfAccount.setCurrency("CHF");
 			
-			// We can use any algorithm to name the accounts.
-			chfAccount.setNo(uuids.nextUUID().toString());
+			Person person = new Person();
+			
+			person.setBirthDate(parseDate(registration.getBirthDate()));
+			person.setFullName(registration.getFullName());
+			person.setIdNumber(registration.getIdNumber());
+			person.setIdType(registration.getIdType());
+			person.setNationality(registration.getNationality());
+			person.setPlaceOfBirth(registration.getPlaceOfBirth());
+			
+			Address ra = registration.getAddress();
+			com.smartvalor.db.Address a = new com.smartvalor.db.Address();
 
-			Account ccAccount = new Account();
-			ccAccount.setContract(contract);
-
-			ccAccount.setAmount(0);
-			ccAccount.setCurrency("XBT"); // Bitcoin code
-
-			accounts.add(chfAccount);
-			accounts.add(ccAccount);
-
-			contract.setAccounts(accounts);
-
-			registrar.storeContract(contract);
-
-			response.setContractNo(contract.getNo());
+			a.setCountry(registration.getCountry());			
+			a.setCity(ra.getCity());
+			a.setEmail(ra.getEmail());
+			a.setHouseNumber(ra.getHouseNumber());
+			a.setPhone(ra.getPhone());
+			a.setStreetName(ra.getStreetName());
+			a.setZipCode(ra.getZipCode());			
+			
+			person.getAddress().add(a);
+			
+			registrar.storePerson(person);
+			
+			response.setRegisteredEntityNo(person.getNo());			
 		} catch (Exception e) {
             logger.error("Failed to register", e);
             return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		}
 
 		return new ResponseEntity<RegistrationRs>(response, HttpStatus.OK);
+	}			
+			
+
+	private Timestamp parseDate(String birthDate) throws ParseException {
+		String pattern = "dd.MM.yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		return new Timestamp(simpleDateFormat.parse(birthDate).getTime());
 	}
+
 
 	// We may need to mock this method for tests.
 	protected Timestamp now() {
@@ -120,15 +113,25 @@ public class JsonController {
 	 * Produce the sample registration request.
 	 */
 	public static void main(String [] args) throws Exception {
-		RegistrationRq r = new RegistrationRq();
-		
+		PersonRegistrationRq r = new PersonRegistrationRq();		
 		r.setToken("123456"); // not this!
-		r.setAddress("CH-8117, Unterdorfwaeg 11, Fallanden, Switzerland");
-		r.setDescription("My first registration");
-		r.seteMail("me@myserver.com");
-		r.setIpAddress("100.200.300.400");
-		r.setPhone("+41762614348");
-		r.setTitle("Dr John Doe");
+		
+		Address addr = new Address();
+		addr.setCity("Faellanden");
+		addr.setHouseNumber("24A");
+		addr.setStreetName("Unterdorfwaeg");
+		addr.setZipCode("CH-8117");
+		addr.setEmail("me@myServer");
+		addr.setPhone("+4123456789");
+		
+		r.setAddress(addr);
+		
+		r.setFullName("John Doe");
+		r.setBirthDate("04.10.1968");
+		r.setNationality("Swiss");
+		r.setPlaceOfBirth("Zurich");
+		r.setIdType("passport");
+		r.setIdNumber("L1234567896");
 		
 		ObjectMapper json = new ObjectMapper();
 		
