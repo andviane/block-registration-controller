@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackageClasses = { Person.class })
 @EnableTransactionManagement
 @Configuration
-@PropertySource("classpath:biocap.properties")
 @PropertySource("classpath:application.properties")
 public class Persistence {
 
