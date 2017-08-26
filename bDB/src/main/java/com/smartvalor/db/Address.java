@@ -42,8 +42,13 @@ public class Address {
 	@UpdateTimestamp
 	Timestamp updated;
 	
+	// Used if this is the person address.
 	@ManyToOne	
 	Person person;
+	
+	// Used if this is the official business entity address without the person associated.
+	@ManyToOne
+	BusinessEntity businessEntity;
 	
 	boolean deleted;
 

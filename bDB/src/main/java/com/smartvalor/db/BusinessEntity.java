@@ -1,15 +1,18 @@
 package com.smartvalor.db;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 public class BusinessEntity {
@@ -22,10 +25,15 @@ public class BusinessEntity {
     private Date dateOfIncorporation;
     private String placeOfIncorporation;
     private String registrationNumber;
-    //todo review
-    @OneToOne(targetEntity = Address.class, mappedBy = "businessEntity")
-    private Address address;
-    private Person representative;
+    
+    // Entity may have more one official address (Switzerland, USA departments)
+    @OneToMany(targetEntity = Address.class, mappedBy = "businessEntity")
+    private Set<Address> address;
+    
+    // Entity may have more than one  representative even if there is only one department.
+    @ManyToMany(targetEntity = Person.class)    
+    private Set<Person> representative;
+    
     @CreationTimestamp
     private Timestamp created;
     @UpdateTimestamp
@@ -82,22 +90,6 @@ public class BusinessEntity {
         this.registrationNumber = registrationNumber;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public Person getRepresentative() {
-        return representative;
-    }
-
-    public void setRepresentative(Person representative) {
-        this.representative = representative;
-    }
-
     public Timestamp getCreated() {
         return created;
     }
@@ -121,4 +113,20 @@ public class BusinessEntity {
     public void setReviewed(boolean reviewed) {
         this.reviewed = reviewed;
     }
+
+	public Set<Address> getAddress() {
+		return address;
+	}
+
+	public void setAddress(Set<Address> address) {
+		this.address = address;
+	}
+
+	public Set<Person> getRepresentative() {
+		return representative;
+	}
+
+	public void setRepresentative(Set<Person> representative) {
+		this.representative = representative;
+	}
 }

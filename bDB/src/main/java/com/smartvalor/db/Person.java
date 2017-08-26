@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,6 +37,14 @@ public class Person {
 	private String idType;
 	
 	private String idNumber;
+	
+	// Business entity if the person belongs to such. Independently registered
+	// persons have this field not set. It would be very unusual for the person
+	// to belong to more than one business entity but theoretically may be
+	// (works part time id a company and creates own company, works part time
+	// in two companies, independent lawyer representing multiple clients, etc).
+	@ManyToMany(targetEntity = Address.class, mappedBy = "person")	
+	private Set<BusinessEntity> businessEntity;
 	
 	// Multiple addresses may exist for the same person. If just additional phone number 
 	// or e-mail address, many fields can be null. I try to avoid creating really many 

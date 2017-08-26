@@ -27,6 +27,7 @@ import com.smartvalor.db.PersonRepository;
 import com.smartvalor.hl.logic.Registrar;
 import com.smartvalor.hl.logic.UniqueUUIDGenerator;
 import com.smartvalor.json.Address;
+import com.smartvalor.json.rq.BusinessRegistrationRq;
 import com.smartvalor.json.rq.PersonRegistrationRq;
 import com.smartvalor.json.rs.RegistrationRs;
 
@@ -51,6 +52,28 @@ public class JsonController {
 
 	// Convert to JSON for logging all requests.
 	private final ObjectMapper json = new ObjectMapper();
+	
+	@RequestMapping(value = "/registerBusiness", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@ResponseBody
+	public ResponseEntity<?> registerBusiness(@RequestBody BusinessRegistrationRq registration) {
+		RegistrationRs response = new RegistrationRs();
+		if (!token.equals(registration.getToken())) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		
+		try {
+			logger.info("Registration: " + json.writeValueAsString(registration));
+			
+            // TODO not implemented yet.
+			response.setRegisteredEntityNo("NOT IMPLEMENTED");
+			
+		} catch (Exception e) {
+            logger.error("Failed to register", e);
+            return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
+		}		
+		
+		return new ResponseEntity<RegistrationRs>(response, HttpStatus.OK);		
+	}	
 	
 	@RequestMapping(value = "/registerPerson", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	@ResponseBody
